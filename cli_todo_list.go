@@ -3,85 +3,9 @@ package main
 import (
     "fmt"
     "os"
-    "slices"
     "bufio"
     "log"
 )
-
-const (
-    TASK_PRIORITY_NORMAL = "normal"
-    TASK_PRIORITY_HIGH = "high"
-    TASK_PRIORITY_MAJOR = "major"
-    TASK_PRIORITY_CRITICAL = "critical"
-)
-
-type Task struct {
-    Completed bool
-    Title string
-    Description string
-    DueDate string
-    Priority string
-    ID string
-}
-
-func (t Task) Display() {
-    if t.Completed {
-        fmt.Printf("[%s] %s (%s)\n", "x", t.Title, t.ID)
-    } else {
-        fmt.Printf("[%s] %s (%s)\n", "-", t.Title, t.ID)
-    }
-    fmt.Printf("\t%s\n\n", t.Description)
-    fmt.Printf("\tDue date: %s\n", t.DueDate)
-    fmt.Printf("\tPriority: %s\n", t.Priority)
-}
-
-type TaskList []Task
-
-func (tl *TaskList) AddTask(t Task) {
-    *tl = append(*tl, t)
-}
-
-func (tl *TaskList) Display() {
-    fmt.Printf("\n")
-    for _, t := range *tl {
-        t.Display()
-    }
-    fmt.Printf("\n")
-}
-
-func (tl *TaskList) GetTaskById(id string) (Task, bool) {
-    for _, v := range *tl {
-        if v.ID == id {
-            return v, true
-        }
-    }
-
-    return Task{}, false
-}
-
-func (tl *TaskList) UpdateTaskCompletion(id string, complete bool) bool {
-    for i, _ := range *tl {
-        if (*tl)[i].ID == id {
-            (*tl)[i].Completed = complete
-
-            return true
-        }
-    }
-
-    return false
-}
-
-func (tl *TaskList) RemoveTask(id string) bool {
-    for i, _ := range *tl {
-        if (*tl)[i].ID == id {
-            // find a better way
-            *tl = slices.Delete(*tl, i, i+1)
-            return true
-        }
-    }
-
-    return false
-}
 
 func PromptAddTask() Task {
     reader := bufio.NewReader(os.Stdin) 
@@ -140,14 +64,16 @@ func PromptAddTask() Task {
         Completed: false,
         Title: string(title)[:len(title)-1],
         Description: string(description)[:len(description)-1],
-        DueDate: string(dueDate)[:len(description)-1],
+        DueDate: string(dueDate)[:len(dueDate)-1],
         Priority: string(priority)[:len(priority)-1],
         ID: string(id)[:len(id)-1],
     }
 }
 
+
 func main() {
     tl := new(TaskList)
+
     tl.AddTask(Task{
         Completed: false,
         Title: "Testovaci task",
@@ -167,6 +93,11 @@ func main() {
     })
 
     tl.AddTask(PromptAddTask())
+
+    err := SaveTaskList(tl)
+    if err != nil {
+        log.Fatal(err) 
+    }
 
     tl.Display()
 }
