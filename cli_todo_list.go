@@ -89,10 +89,34 @@ func PromptChangeCompletionStatus(complete bool) ([]byte, error) {
     return id[:len(id)-1], nil
 }
 
+func PromptRemoveTask() ([]byte, error) {
+    reader := bufio.NewReader(os.Stdin)
+
+    fmt.Printf("\n")
+
+    fmt.Printf("Enter the id of the task you want to remove from the list: ")
+
+    id, err := reader.ReadBytes('\n')
+    if err != nil {
+        return nil, err
+    }
+
+    return id[:len(id)-1], nil
+}
+
+func PromptUsage() {
+    fmt.Printf("%s show|complete|uncomplete|add|remove\n", os.Args[0]) 
+}
+
 func main() {
     tl, err := GetTaskListFromJson(TASKS_FILE)
     if err != nil {
         log.Fatal(err)
+    }
+
+    if len(os.Args) < 2 {
+        PromptUsage()
+        os.Exit(1)
     }
 
     for _, v := range os.Args {
@@ -114,6 +138,13 @@ func main() {
                 log.Fatal(err)
             }
             _ = tl.UpdateTaskCompletion(string(id), false)
+        }
+        case "remove": {
+            id, err := PromptRemoveTask()
+            if err != nil {
+                log.Fatal(err)
+            }
+            _ = tl.RemoveTask(string(id))
         }
         case "show": {
             tl.Display()
