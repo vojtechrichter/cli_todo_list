@@ -12,11 +12,13 @@ func (tl *TaskList) AddTask(t Task) {
 }
 
 func (tl *TaskList) Display() {
-    fmt.Printf("\n")
-    for _, t := range *tl {
-        t.Display()
+    if len(*tl) > 0 {
+        fmt.Printf("\n")
+        for _, t := range *tl {
+            t.Display()
+        }
+        fmt.Printf("\n")
     }
-    fmt.Printf("\n")
 }
 
 func (tl *TaskList) GetTaskById(id string) (Task, bool) {

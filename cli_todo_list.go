@@ -70,10 +70,13 @@ func PromptAddTask() Task {
     }
 }
 
-
 func main() {
-    tl := new(TaskList)
+    tl, err := GetTaskListFromJson(TASKS_FILE)
+    if err != nil {
+        panic(err)
+    }
 
+    /*
     tl.AddTask(Task{
         Completed: false,
         Title: "Testovaci task",
@@ -91,10 +94,15 @@ func main() {
         Priority: TASK_PRIORITY_NORMAL,
         ID: "REDIS234",
     })
+    */
 
-    tl.AddTask(PromptAddTask())
+    for _, v := range os.Args {
+        if v == "add" {
+            tl.AddTask(PromptAddTask())
+        }
+    }
 
-    err := SaveTaskList(tl)
+    err = SaveTaskList(tl)
     if err != nil {
         log.Fatal(err) 
     }

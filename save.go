@@ -16,6 +16,21 @@ func GetJsonFromTaskList(tl *TaskList) ([]byte, error) {
     return tlJson, nil
 }
 
+func GetTaskListFromJson(filename string) (*TaskList, error) {
+    tl := new(TaskList)
+
+    data, err := os.ReadFile(filename)
+    if err != nil {
+        return tl, err
+    }
+
+    if err = json.Unmarshal([]byte(data), tl); err != nil {
+        return tl, err
+    }
+
+    return tl, nil
+}
+
 func SaveTaskList(tl *TaskList) error {
     json, err := GetJsonFromTaskList(tl)
     if err != nil {
