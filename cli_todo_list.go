@@ -2,8 +2,10 @@ package main
 
 import (
     "fmt"
-    _ "os"
+    "os"
     "slices"
+    "bufio"
+    "log"
 )
 
 const (
@@ -81,6 +83,69 @@ func (tl *TaskList) RemoveTask(id string) bool {
     return false
 }
 
+func PromptAddTask() Task {
+    reader := bufio.NewReader(os.Stdin) 
+    fmt.Printf("Add task\n\n")
+    fmt.Printf("Enter task ID: ")
+
+    id, err := reader.ReadBytes('\n')
+
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    fmt.Printf("\n")
+
+    fmt.Printf("Enter task title: ")
+
+    title, err := reader.ReadBytes('\n')
+
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    fmt.Printf("\n")
+
+    fmt.Printf("Enter task description: ")
+
+    description, err := reader.ReadBytes('\n')
+
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    fmt.Printf("\n")
+
+    fmt.Printf("Enter due date: ")
+
+    dueDate, err := reader.ReadBytes('\n')
+
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    fmt.Printf("\n")
+
+    fmt.Printf("Enter task priority: ")
+
+    priority, err := reader.ReadBytes('\n')
+
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    fmt.Printf("\n")
+
+    return Task{
+        Completed: false,
+        Title: string(title)[:len(title)-1],
+        Description: string(description)[:len(description)-1],
+        DueDate: string(dueDate)[:len(description)-1],
+        Priority: string(priority)[:len(priority)-1],
+        ID: string(id)[:len(id)-1],
+    }
+}
+
 func main() {
     tl := new(TaskList)
     tl.AddTask(Task{
@@ -100,6 +165,8 @@ func main() {
         Priority: TASK_PRIORITY_NORMAL,
         ID: "REDIS234",
     })
+
+    tl.AddTask(PromptAddTask())
 
     tl.Display()
 }
