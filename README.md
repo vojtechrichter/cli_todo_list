@@ -7,3 +7,5 @@ Build the project with the following command:
 And just run the executable:
 
 `./cli_todo_list`
+
+The tasks are stored in a json file in the current working directory, `tasks.json`
