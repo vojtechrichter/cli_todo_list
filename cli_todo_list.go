@@ -70,35 +70,54 @@ func PromptAddTask() Task {
     }
 }
 
+func PromptChangeCompletionStatus(complete bool) ([]byte, error) {
+    reader := bufio.NewReader(os.Stdin)
+
+    fmt.Printf("\n")
+
+    if complete {
+        fmt.Printf("Enter the id of the task you want to complete: ")
+    } else {
+        fmt.Printf("Enter the id of the task you want to uncomplete: ")
+    }
+
+    id, err := reader.ReadBytes('\n')
+    if err != nil {
+        return nil, err
+    }
+
+    return id[:len(id)-1], nil
+}
+
 func main() {
     tl, err := GetTaskListFromJson(TASKS_FILE)
     if err != nil {
-        panic(err)
+        log.Fatal(err)
     }
 
-    /*
-    tl.AddTask(Task{
-        Completed: false,
-        Title: "Testovaci task",
-        Description: "Tohle je examle popis ukolu",
-        DueDate: "2024-07-09:10-00-00",
-        Priority: TASK_PRIORITY_CRITICAL,
-        ID: "A32",
-    })
-
-    tl.AddTask(Task{
-        Completed: true,
-        Title: "Implement content caching",
-        Description: "Set up redis for client-side caching",
-        DueDate: "2024-07-21:not_specified",
-        Priority: TASK_PRIORITY_NORMAL,
-        ID: "REDIS234",
-    })
-    */
-
     for _, v := range os.Args {
-        if v == "add" {
+        switch v {
+        case "add": {
             tl.AddTask(PromptAddTask())
+        }
+        case "complete": {
+            id, err := PromptChangeCompletionStatus(true)
+            if err != nil {
+                log.Fatal(err)
+            }
+            success := tl.UpdateTaskCompletion(string(id), true)
+            fmt.Println(success)
+        }
+        case "uncomplete": {
+            id, err := PromptChangeCompletionStatus(false)
+            if err != nil {
+                log.Fatal(err)
+            }
+            _ = tl.UpdateTaskCompletion(string(id), false)
+        }
+        case "show": {
+            tl.Display()
+        }
         }
     }
 
@@ -106,6 +125,4 @@ func main() {
     if err != nil {
         log.Fatal(err) 
     }
-
-    tl.Display()
 }
